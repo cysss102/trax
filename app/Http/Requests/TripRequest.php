@@ -28,8 +28,10 @@ class TripRequest extends FormRequest
     protected function formatDate(): void
     {
         if ($this->request->has('date')) {
+            $date = new DateTimeImmutable($this->request->get('date'));
+
             $this->merge([
-                'date' => new DateTimeImmutable($this->request->get('date')),
+                'date' => $date->format('Y-m-d'),
             ]);
         }
     }

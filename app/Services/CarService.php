@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Exceptions\ApiBadRequestException;
 use App\Exceptions\DataNotFoundException;
 use App\Http\Requests\CarRequest;
 use App\Repositories\CarRepository;
 use App\Repositories\TripRepository;
+use Exception;
 use Illuminate\Support\Collection;
 
 class CarService
@@ -18,9 +20,13 @@ class CarService
 
     public function addCar(CarRequest $carRequest): void
     {
-        $carRequest->validated();
+        try {
+            $carRequest->validated();
 
-        $this->carRepository->insertModel($carRequest->all());
+            $this->carRepository->insertModel($carRequest->all());
+        } catch (Exception $exception) {
+            throw new ApiBadRequestException($exception->getMessage());
+        }
     }
 
     public function deleteModel(int $id): void

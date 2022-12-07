@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Exceptions\DataNotFoundException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -21,19 +22,24 @@ abstract class AbstractApiRepository implements ApiRepositoryInterface
 
     public function deleteModelById(int $id): void
     {
-        $car = $this->model::find($id);
+        $car = $this->model->newQuery()->find($id);
+
+        if (null === $car) {
+            throw new DataNotFoundException();
+        }
 
         $car->delete();
     }
 
     public function fetchAll(): Collection
     {
-        return $this->model::all();
+        return $this->model->newQuery()->select()->get();
     }
 
     public function fetchModelById(int $id): ?Model
     {
-        return $this->model::select()
+        return $this->model->newQuery()
+            ->select()
             ->where('id', $id)
             ->first();
     }

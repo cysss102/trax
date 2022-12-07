@@ -5,25 +5,26 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Trip;
-use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Collection;
 
 class TripRepository extends AbstractApiRepository
 {
-    public function __construct(private Trip $trip, private DatabaseManager $databaseManager)
+    public function __construct(private Trip $trip)
     {
         parent::__construct($this->trip);
     }
 
     public function fetchAll(): Collection
     {
-        return $this->trip::with('car')->get();
+        return $this->trip->newQuery()
+            ->with('car')
+            ->get();
     }
 
     public function fetchTotalMilesAndTripsByCarId(int $carId): Collection
     {
-        $result = $this->databaseManager->table($this->trip->getTable())
-            ->select($this->databaseManager->raw('SUM(total) as trip_miles, COUNT(id) as trip_count'))
+        $result = $this->trip->newQuery()
+            ->selectRaw('SUM(total) as trip_miles, COUNT(id) as trip_count')
             ->where('car_id', '=', $carId)
             ->first();
 

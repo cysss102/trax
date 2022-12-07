@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CarRequest;
 use App\Services\CarService;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CarController extends Controller
@@ -16,29 +17,25 @@ class CarController extends Controller
 
     public function index(): JsonResponse
     {
-        return response()->json(['data' => $this->carService->getAllCars()], 200);
+        return response()->json(['data' => $this->carService->getAllCars()], Response::HTTP_OK);
     }
 
     public function show(int $id): JsonResponse
     {
-        return response()->json(['data' => $this->carService->getCarById($id)], 200);
+        return response()->json(['data' => $this->carService->getCarById($id)], Response::HTTP_OK);
     }
 
     public function store(CarRequest $request): JsonResponse
     {
-        try {
-            $this->carService->addCar($request);
+        $this->carService->addCar($request);
 
-            return response()->json(['message' => 'added'], 201);
-        } catch (\Exception $exception) {
-            throw new HttpException(400, "Invalid data");
-        }
+        return response()->json(['message' => 'Added'], Response::HTTP_CREATED);
     }
 
     public function destroy(int $id): JsonResponse
     {
         $this->carService->deleteModel($id);
 
-        return response()->json(['message' => 'deleted'], 204);
+        return response()->json([], Response::HTTP_NO_CONTENT);
     }
 }

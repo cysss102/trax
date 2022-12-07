@@ -3,7 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
@@ -54,7 +54,8 @@ class Handler extends ExceptionHandler
             ], 404);
         }
 
-        if ($exception instanceof HttpException) {
+        if ($exception instanceof ValidationException
+            || $exception instanceof ApiBadRequestException) {
             return response()->json([
                 'message' => 'Bad request',
             ], 400);
